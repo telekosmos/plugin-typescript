@@ -15,15 +15,15 @@ var Compiler = require('../lib/incremental-compiler').IncrementalCompiler;
 var formatErrors = require('../lib/format-errors').formatErrors;
 
 var missingFile = '/somefolder/fixtures/program1/missing-file.ts';
-var circularFile = require.resolve('./fixtures/program1/circular.ts');
+var circularFile = require.resolve('./fixtures/circular/circular.ts');
 var missingImport = require.resolve('./fixtures/program1/missing-import.ts');
 var syntaxError = require.resolve('./fixtures/program1/syntax-error.ts');
 var typeError = require.resolve('./fixtures/program1/type-error.ts');
 var nestedTypeError = require.resolve('./fixtures/program1/nested-type-error.ts');
 var noImports = require.resolve('./fixtures/program1/no-imports.ts');
 var oneImport = require.resolve('./fixtures/program1/one-import.ts');
-var ambientImportJs = require.resolve('./fixtures/program1/ambient-import-js.ts');
-var ambientImportTs = require.resolve('./fixtures/program1/ambient-import-ts.ts');
+var ambientImportJs = require.resolve('./fixtures/ambients/ambient-import-js.ts');
+var ambientImportTs = require.resolve('./fixtures/ambients/ambient-import-ts.ts');
 var refImport = require.resolve('./fixtures/program1/ref-import.ts');
 var constEnums = require.resolve('./fixtures/program1/const-enums.ts');
 

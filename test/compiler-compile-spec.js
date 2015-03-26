@@ -15,14 +15,14 @@ var formatErrors = require('../lib/format-errors').formatErrors;
 
 var missingFile = '/somefolder/fixtures/program1/missing-file.ts';
 var missingImport = require.resolve('./fixtures/program1/missing-import.ts');
-var ambientReference = require.resolve('./fixtures/program1/ambient-reference.ts');
 var syntaxError = require.resolve('./fixtures/program1/syntax-error.ts');
 var referenceSyntaxError = require.resolve('./fixtures/program1/ref-syntax-error.ts');
 var typeError = require.resolve('./fixtures/program1/type-error.ts');
 var nestedTypeError = require.resolve('./fixtures/program1/nested-type-error.ts');
 var noImports = require.resolve('./fixtures/program1/no-imports.ts');
 var oneImport = require.resolve('./fixtures/program1/one-import.ts');
-var ambientImportJs = require.resolve('./fixtures/program1/ambient-import-js.ts');
+var ambientReference = require.resolve('./fixtures/ambients/ambient-reference.ts');
+var ambientImportJs = require.resolve('./fixtures/ambients/ambient-import-js.ts');
 var refImport = require.resolve('./fixtures/program1/ref-import.ts');
 var constEnums = require.resolve('./fixtures/program1/const-enums.ts');
 
@@ -40,11 +40,6 @@ function fetch(filename) {
 }
 
 function resolve(dep, parent) {
-   if (dep == "ambient/ambient.d.ts")
-      return Promise.resolve(dep);
-   else if (dep == "angular")
-      return Promise.resolve(dep + ".js");
-
    //console.log("resolving " + parent + " -> " + dep);
    var result = "";
 
@@ -52,10 +47,14 @@ function resolve(dep, parent) {
       result = dep;
    else if (dep[0] == '.')
       result = path.join(path.dirname(parent), dep);
-   else
+   else if (dep.indexOf("ambient/") == 0)
+      result = require.resolve("./fixtures/ambients/resolved" + dep.slice(7))
+   else if (dep.indexOf("typescript/") == 0)
       result = require.resolve(dep);
+   else
+      result = dep + ".js";
 
-   if (path.extname(result) != '.ts')
+   if ((path.extname(result) != '.ts') && (path.extname(result) != '.js'))
       result = result + ".ts";
 
    //console.log("resolved " + parent + " -> " + result);
