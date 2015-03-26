@@ -47,8 +47,8 @@ function resolve(dep, parent) {
       result = dep;
    else if (dep[0] == '.')
       result = path.join(path.dirname(parent), dep);
-   else if (dep.indexOf("ambient/") == 0)
-      result = require.resolve("./fixtures/ambients/resolved" + dep.slice(7))
+   else if (dep.indexOf("ambient") == 0)
+      result = require.resolve("./fixtures/ambients/resolved/" + dep)
    else if (dep.indexOf("typescript/") == 0)
       result = require.resolve(dep);
    else
