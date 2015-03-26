@@ -1,4 +1,5 @@
-/// <reference path="../_references.d.ts" />
+/// <reference path="ambient.d.ts" />
 
-import oneImport = require("one-import");
-export = oneImport;
+import amb = require("ambient");
+console.log(amb.Music.hum());
+export = amb;

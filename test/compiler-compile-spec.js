@@ -23,16 +23,14 @@ var noImports = require.resolve('./fixtures/program1/no-imports.ts');
 var oneImport = require.resolve('./fixtures/program1/one-import.ts');
 var ambientReference = require.resolve('./fixtures/ambients/ambient-reference.ts');
 var ambientImportJs = require.resolve('./fixtures/ambients/ambient-import-js.ts');
+var ambientImportTs = require.resolve('./fixtures/ambients/ambient-import-ts.ts');
+var ambientDuplicate = require.resolve('./fixtures/ambients/ambient-duplicate.ts');
 var refImport = require.resolve('./fixtures/program1/ref-import.ts');
 var constEnums = require.resolve('./fixtures/program1/const-enums.ts');
 
 var filelist = [];
 
 function fetch(filename) {
-   if (filename == "ambient/ambient.d.ts") {
-      return Promise.resolve("interface IAmbient { hum(); }");
-   }
-
    //console.log("fetching " + filename);
    filelist.push(filename);
    var readFile = Promise.promisify(fs.readFile.bind(fs));
@@ -47,8 +45,10 @@ function resolve(dep, parent) {
       result = dep;
    else if (dep[0] == '.')
       result = path.join(path.dirname(parent), dep);
+   else if (dep == "ambient")
+      result = require.resolve("./fixtures/ambients/resolved/" + dep + ".ts");
    else if (dep.indexOf("ambient") == 0)
-      result = require.resolve("./fixtures/ambients/resolved/" + dep)
+      result = require.resolve("./fixtures/ambients/resolved/" + dep);
    else if (dep.indexOf("typescript/") == 0)
       result = require.resolve(dep);
    else
@@ -56,6 +56,9 @@ function resolve(dep, parent) {
 
    if ((path.extname(result) != '.ts') && (path.extname(result) != '.js'))
       result = result + ".ts";
+
+   // if (result[0] == '/')
+   //    result = result.slice(1);
 
    //console.log("resolved " + parent + " -> " + result);
    return Promise.resolve(result);
@@ -181,6 +184,45 @@ describe('Incremental Compiler', function () {
          compiler.load(ambientReference)
             .then(function(txt) {
                return compiler.compile(ambientReference);
+            })
+            .then(function(output) {
+               formatErrors(output.errors, console);
+               output.should.have.property('failure', false);
+               output.should.have.property('errors').with.lengthOf(0);
+            })
+            .then(done, done);
+      });
+
+      it('handles ambient javascript imports', function (done) {
+         compiler.load(ambientImportJs)
+            .then(function(txt) {
+               return compiler.compile(ambientImportJs);
+            })
+            .then(function(output) {
+               formatErrors(output.errors, console);
+               output.should.have.property('failure', false);
+               output.should.have.property('errors').with.lengthOf(0);
+            })
+            .then(done, done);
+      });
+
+      it('handles ambient typescript imports', function (done) {
+         compiler.load(ambientImportTs)
+            .then(function(txt) {
+               return compiler.compile(ambientImportTs);
+            })
+            .then(function(output) {
+               formatErrors(output.errors, console);
+               output.should.have.property('failure', false);
+               output.should.have.property('errors').with.lengthOf(0);
+            })
+            .then(done, done);
+      });
+
+      it('handles ambients with subset names', function (done) {
+         compiler.load(ambientDuplicate)
+            .then(function(txt) {
+               return compiler.compile(ambientDuplicate);
             })
             .then(function(output) {
                formatErrors(output.errors, console);

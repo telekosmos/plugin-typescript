@@ -37,22 +37,22 @@ function fetch(filename) {
 }
 
 function resolve(dep, parent) {
-   if (dep == "angular")
-      return Promise.resolve(dep + ".js");
-   else if (dep == "one-import")
-      return Promise.resolve(oneImport);
-
-   //console.log("resolving " + parent + " -> " + dep);
    var result = "";
 
    if (dep[0] == '/')
       result = dep;
    else if (dep[0] == '.')
       result = path.join(path.dirname(parent), dep);
-   else
+   else if (dep == "ambient")
+      result = require.resolve("./fixtures/ambients/resolved/" + dep + ".ts");
+   else if (dep.indexOf("ambient") == 0)
+      result = require.resolve("./fixtures/ambients/resolved/" + dep);
+   else if (dep.indexOf("typescript/") == 0)
       result = require.resolve(dep);
+   else
+      result = dep + ".js";
 
-   if (path.extname(result) != '.ts')
+   if ((path.extname(result) != '.ts') && (path.extname(result) != '.js'))
       result = result + ".ts";
 
    //console.log("resolved " + parent + " -> " + result);
@@ -123,6 +123,7 @@ describe('Incremental Compiler', function () {
                return compiler.compile(ambientImportJs);
             })
             .then(function(output) {
+               //formatErrors(output.errors, console);
                filelist.length.should.be.equal(4);
             })
             .then(done, done)
@@ -134,7 +135,8 @@ describe('Incremental Compiler', function () {
                return compiler.compile(ambientImportTs);
             })
             .then(function(output) {
-               filelist.length.should.be.equal(6);
+               //formatErrors(output.errors, console);
+               filelist.length.should.be.equal(4);
             })
             .then(done, done)
       });
