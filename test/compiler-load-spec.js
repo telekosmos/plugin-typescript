@@ -22,7 +22,8 @@ var typeError = require.resolve('./fixtures/program1/type-error.ts');
 var nestedTypeError = require.resolve('./fixtures/program1/nested-type-error.ts');
 var noImports = require.resolve('./fixtures/program1/no-imports.ts');
 var oneImport = require.resolve('./fixtures/program1/one-import.ts');
-var ambientImport = require.resolve('./fixtures/program1/ambient-import.ts');
+var ambientImportJs = require.resolve('./fixtures/program1/ambient-import-js.ts');
+var ambientImportTs = require.resolve('./fixtures/program1/ambient-import-ts.ts');
 var refImport = require.resolve('./fixtures/program1/ref-import.ts');
 var constEnums = require.resolve('./fixtures/program1/const-enums.ts');
 
@@ -36,6 +37,11 @@ function fetch(filename) {
 }
 
 function resolve(dep, parent) {
+   if (dep == "angular")
+      return Promise.resolve(dep + ".js");
+   else if (dep == "one-import")
+      return Promise.resolve(oneImport);
+
    //console.log("resolving " + parent + " -> " + dep);
    var result = "";
 
@@ -111,13 +117,24 @@ describe('Incremental Compiler', function () {
             .then(done, done)
       });
 
-      it('ignores ambient imports', function (done) {
-         compiler.load(ambientImport)
+      it('ignores ambient javascript imports', function (done) {
+         compiler.load(ambientImportJs)
             .then(function(file) {
-               return compiler.compile(ambientImport);
+               return compiler.compile(ambientImportJs);
             })
             .then(function(output) {
                filelist.length.should.be.equal(4);
+            })
+            .then(done, done)
+      });
+
+      it('loads ambient typescript imports', function (done) {
+         compiler.load(ambientImportTs)
+            .then(function(file) {
+               return compiler.compile(ambientImportTs);
+            })
+            .then(function(output) {
+               filelist.length.should.be.equal(6);
             })
             .then(done, done)
       });

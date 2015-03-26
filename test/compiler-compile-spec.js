@@ -22,7 +22,7 @@ var typeError = require.resolve('./fixtures/program1/type-error.ts');
 var nestedTypeError = require.resolve('./fixtures/program1/nested-type-error.ts');
 var noImports = require.resolve('./fixtures/program1/no-imports.ts');
 var oneImport = require.resolve('./fixtures/program1/one-import.ts');
-var ambientImport = require.resolve('./fixtures/program1/ambient-import.ts');
+var ambientImportJs = require.resolve('./fixtures/program1/ambient-import-js.ts');
 var refImport = require.resolve('./fixtures/program1/ref-import.ts');
 var constEnums = require.resolve('./fixtures/program1/const-enums.ts');
 
@@ -42,6 +42,8 @@ function fetch(filename) {
 function resolve(dep, parent) {
    if (dep == "ambient/ambient.d.ts")
       return Promise.resolve(dep);
+   else if (dep == "angular")
+      return Promise.resolve(dep + ".js");
 
    //console.log("resolving " + parent + " -> " + dep);
    var result = "";
@@ -84,9 +86,9 @@ describe('Incremental Compiler', function () {
       });
 
       it('compiles ambient imports', function (done) {
-         compiler.load(ambientImport)
+         compiler.load(ambientImportJs)
             .then(function(txt) {
-               return compiler.compile(ambientImport);
+               return compiler.compile(ambientImportJs);
             })
             .then(function(output) {
                output.should.have.property('failure', false);
