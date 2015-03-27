@@ -25,6 +25,7 @@ var ambientReference = require.resolve('./fixtures/ambients/ambient-reference.ts
 var ambientImportJs = require.resolve('./fixtures/ambients/ambient-import-js.ts');
 var ambientImportTs = require.resolve('./fixtures/ambients/ambient-import-ts.ts');
 var ambientDuplicate = require.resolve('./fixtures/ambients/ambient-duplicate.ts');
+var ambientRequires = require.resolve('./fixtures/ambients/ambient-requires.ts');
 var refImport = require.resolve('./fixtures/program1/ref-import.ts');
 var constEnums = require.resolve('./fixtures/program1/const-enums.ts');
 
@@ -223,6 +224,19 @@ describe('Incremental Compiler', function () {
          compiler.load(ambientDuplicate)
             .then(function(txt) {
                return compiler.compile(ambientDuplicate);
+            })
+            .then(function(output) {
+               formatErrors(output.errors, console);
+               output.should.have.property('failure', false);
+               output.should.have.property('errors').with.lengthOf(0);
+            })
+            .then(done, done);
+      });
+
+      it('handles ambients with internal requires', function (done) {
+         compiler.load(ambientRequires)
+            .then(function(txt) {
+               return compiler.compile(ambientRequires);
             })
             .then(function(output) {
                formatErrors(output.errors, console);

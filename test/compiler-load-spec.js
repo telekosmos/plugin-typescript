@@ -24,6 +24,7 @@ var noImports = require.resolve('./fixtures/program1/no-imports.ts');
 var oneImport = require.resolve('./fixtures/program1/one-import.ts');
 var ambientImportJs = require.resolve('./fixtures/ambients/ambient-import-js.ts');
 var ambientImportTs = require.resolve('./fixtures/ambients/ambient-import-ts.ts');
+var ambientRequires = require.resolve('./fixtures/ambients/ambient-requires.ts');
 var refImport = require.resolve('./fixtures/program1/ref-import.ts');
 var constEnums = require.resolve('./fixtures/program1/const-enums.ts');
 
